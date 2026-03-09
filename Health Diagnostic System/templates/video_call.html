@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}MediAI — Video Consultation{% endblock %}
+
+{% block extra_style %}
+.page { max-width:1000px; margin:0 auto; padding:32px; }
+.back-link { display:inline-flex; align-items:center; gap:8px; font-size:.8rem; color:var(--muted); text-decoration:none; margin-bottom:20px; }
+.back-link:hover { color:var(--ink); }
+.call-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:12px; }
+.call-title { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; letter-spacing:-.03em; }
+.live-badge { display:inline-flex; align-items:center; gap:7px; background:rgba(232,52,28,.1); color:var(--red); border:1px solid rgba(232,52,28,.25); padding:5px 14px; border-radius:20px; font-size:.78rem; font-weight:700; }
+.live-dot { width:8px; height:8px; background:var(--red); border-radius:50%; animation:pulse 1.4s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
+.video-frame { width:100%; height:600px; border-radius:12px; border:none; background:var(--ink); }
+.call-note { margin-top:14px; background:var(--cream); border-radius:8px; padding:13px 16px; font-size:.82rem; color:var(--muted); display:flex; align-items:center; gap:9px; }
+@media(max-width:600px){ .video-frame{height:400px} .page{padding:16px} }
+{% endblock %}
+
+{% block content %}
+<div class="page">
+  <a href="{% if role == 'doctor' %}/doctor/consultation/{{ cid }}{% else %}/consultation/{{ cid }}{% endif %}" class="back-link">
+    <i class="fa-solid fa-arrow-left"></i> Back to Consultation
+  </a>
+
+  <div class="call-header">
+    <div class="call-title">
+      <i class="fa-solid fa-video" style="color:var(--teal);margin-right:8px;"></i>
+      Video Consultation #{{ cid }}
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+      {% if started_at %}
+      <span style="font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:5px;">
+        <i class="fa-solid fa-clock"></i> Started: <b style="color:var(--ink);">{{ started_at }}</b>
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Daily.co embedded video room -->
+  <iframe
+    class="video-frame"
+    src="{{ room_url }}"
+    allow="camera; microphone; fullscreen; display-capture; autoplay"
+    allowfullscreen
+  ></iframe>
+
+  <div class="call-note">
+    <i class="fa-solid fa-circle-info"></i>
+    Allow camera and microphone access when prompted. The call link expires after 1 hour.
+    {% if role == 'doctor' %}
+    Share the link <b>/video/join/{{ cid }}</b> with your patient so they can join.
+    {% else %}
+    Your doctor has started this call. You are now connected.
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
